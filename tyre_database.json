@@ -1,0 +1,102 @@
+{
+  "budget": [
+    {
+      "brand": "MRF",
+      "model": "ZVTS",
+      "sizes": ["165/80R14", "175/65R15", "185/70R14"],
+      "price_range": "₹3200-₹4500",
+      "features": [
+        "Durable rubber compound",
+        "Good wet and dry grip",
+        "Long tread life"
+      ],
+      "purchase_links": [
+        {
+          "retailer": "TyreX",
+          "url": "https://tyrex.in/mrf-zvts-165-80r14"
+        }
+      ]
+    },
+    {
+      "brand": "CEAT",
+      "model": "Milaze X3",
+      "sizes": ["165/80R14", "185/65R14"],
+      "price_range": "₹3400-₹4600",
+      "features": [
+        "Puncture resistant",
+        "Economical choice",
+        "Comfortable ride"
+      ],
+      "purchase_links": [
+        {
+          "retailer": "CEAT Official Store",
+          "url": "https://ceat.com/milaze-x3"
+        }
+      ]
+    }
+  ],
+  "mid-range": [
+    {
+      "brand": "Apollo",
+      "model": "Alnac 4G",
+      "sizes": ["185/65R15", "195/60R15"],
+      "price_range": "₹4800-₹6000",
+      "features": ["Low noise", "Enhanced traction", "Balanced wear"],
+      "purchase_links": [
+        {
+          "retailer": "TyreDekho",
+          "url": "https://tyredekho.com/apollo-alnac-4g"
+        }
+      ]
+    },
+    {
+      "brand": "JK Tyre",
+      "model": "Vectra",
+      "sizes": ["185/65R14", "195/65R15"],
+      "price_range": "₹4700-₹5900",
+      "features": ["Good wet grip", "Improved handling", "Robust sidewall"],
+      "purchase_links": [
+        {
+          "retailer": "JK Tyre Official",
+          "url": "https://jktyre.com/vectra"
+        }
+      ]
+    }
+  ],
+  "premium": [
+    {
+      "brand": "Michelin",
+      "model": "Primacy 4",
+      "sizes": ["205/55R16", "215/60R17"],
+      "price_range": "₹8500-₹12000",
+      "features": [
+        "Exceptional wet grip",
+        "Low rolling resistance",
+        "Long tread life"
+      ],
+      "purchase_links": [
+        {
+          "retailer": "Michelin India",
+          "url": "https://michelin.in/primacy-4"
+        }
+      ]
+    },
+    {
+      "brand": "Bridgestone",
+      "model": "Turanza T005",
+      "sizes": ["205/55R16", "195/65R15"],
+      "price_range": "₹8000-₹11000",
+      "features": [
+        "Quiet and comfortable",
+        "Consistent performance",
+        "Enhanced durability"
+      ],
+      "purchase_links": [
+        {
+          "retailer": "Bridgestone Official",
+          "url": "https://bridgestone.co.in/turanza-t005"
+        }
+      ]
+    }
+  ]
+}
