@@ -37,6 +37,7 @@ class Tyre(BaseModel):
         in_stock (Optional[int]): Quantity currently in stock.
         delivery_time_hrs (Optional[int]): Estimated delivery time in hours.
         buy_link (Optional[str]): URL linking to a purchase page for the tyre.
+        image_url (Optional[str]): URL to an image of the tyre.
 
     Notes:
         - This class is intended as a Pydantic BaseModel for validation and serialization.
@@ -58,6 +59,28 @@ class Tyre(BaseModel):
     in_stock: Optional[int] = None
     delivery_time_hrs: Optional[int] = None
     buy_link: Optional[str] = None
+    image_url: Optional[str] = None
+
+    def __init__(self, **data):
+        """
+        Initialize a Tyre instance with provided data.
+
+        Parameters
+        ----------
+        **data : dict
+            Keyword arguments corresponding to Tyre attributes.
+
+        Returns
+        -------
+        None
+        """
+        image_url = data.pop("image", None)
+        super().__init__(
+            **{
+                **data,
+                "image_url": image_url
+            }
+        )
 
 
 class Tyres(BaseModel):
