@@ -16,9 +16,22 @@ mcp = FastMCP(
         "1.0.0"
     ),
     transport_security=TransportSecuritySettings(
-        allowed_hosts=['*'],
-        allowed_origins=['*']
-    )
+        enable_dns_rebinding_protection=True,
+        allowed_hosts=[
+            "127.0.0.1",
+            "127.0.0.1:*",
+            "localhost",
+            "localhost:*",
+            "ec2-44-197-115-243.compute-1.amazonaws.com",
+            "ec2-44-197-115-243.compute-1.amazonaws.com:*",
+        ],
+        allowed_origins=[
+            "http://ec2-44-197-115-243.compute-1.amazonaws.com",
+            "https://ec2-44-197-115-243.compute-1.amazonaws.com",
+            "http://localhost",
+            "http://localhost:*",
+        ],
+    ),
 )
 
 
