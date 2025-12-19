@@ -2,8 +2,8 @@ name: Push to ECR and Deploy to EC2
 
 on:
   push:
-    # Trigger the workflow on push events to the "dev" branch.
-    branches: [dev]
+    # Trigger the workflow on push events to the "beta" branch.
+    branches: [beta]
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }} # The AWS region in which the ECR and Lambda resources are located.
@@ -15,7 +15,7 @@ jobs:
   build-and-push:
     name: Build Image
     runs-on: ubuntu-latest # Use an Ubuntu Linux runner.
-    environment: dev
+    environment: beta
 
     steps:
       - name: Check out code
@@ -42,7 +42,7 @@ jobs:
     name: Deploy to EC2
     runs-on: ubuntu-latest
     needs: build-and-push
-    environment: dev
+    environment: beta
 
     steps:
       - name: Configure AWS credentials
