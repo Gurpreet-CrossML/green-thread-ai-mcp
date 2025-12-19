@@ -3,6 +3,7 @@ from typing import Optional
 import requests
 
 from mcp.server.fastmcp import FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
 
 from schemas import Tyres, Tyre
 from utils import get_url, get_basic_auth, get_headers
@@ -14,6 +15,10 @@ mcp = FastMCP(
         "A service to manage and retrieve tyre data. "
         "1.0.0"
     ),
+    transport_security=TransportSecuritySettings(
+        allowed_hosts=['*'],
+        allowed_origins=['*']
+    )
 )
 
 
