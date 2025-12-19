@@ -24,10 +24,14 @@ mcp = FastMCP(
             "localhost:*",
             "ec2-44-197-115-243.compute-1.amazonaws.com",
             "ec2-44-197-115-243.compute-1.amazonaws.com:*",
+            "ec2-13-49-41-40.eu-north-1.compute.amazonaws.com",
+            "ec2-13-49-41-40.eu-north-1.compute.amazonaws.com:*"
         ],
         allowed_origins=[
             "http://ec2-44-197-115-243.compute-1.amazonaws.com",
             "https://ec2-44-197-115-243.compute-1.amazonaws.com",
+            "http://ec2-13-49-41-40.eu-north-1.compute.amazonaws.com",
+            "https://ec2-13-49-41-40.eu-north-1.compute.amazonaws.com",
             "http://localhost",
             "http://localhost:*",
         ],
