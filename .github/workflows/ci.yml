@@ -6,8 +6,8 @@ on:
     branches: [dev]
 
 env:
-  AWS_REGION: us-east-1 # The AWS region in which the ECR and Lambda resources are located.
-  ECR_REGISTRY: 315285765227.dkr.ecr.us-east-1.amazonaws.com # The URL of the ECR registry.
+  AWS_REGION: ${{ secrets.AWS_REGION }} # The AWS region in which the ECR and Lambda resources are located.
+  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com # The URL of the ECR registry.
   ECR_REPOSITORY: ai-tyer-selection-dev-mcp-ecr # The name of the ECR repository.
   IMAGE_TAG: latest # The tag to be used for the Docker image.
 
