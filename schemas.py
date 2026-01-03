@@ -23,6 +23,7 @@ class Tyre(BaseModel):
 
     Attributes:
         tyre_id (Optional[str]): Optional unique identifier for the tyre.
+        name (Optional[str]): Optional name of the tyre.
         brand (Optional[str]): Manufacturer or brand name.
         model (Optional[str]): Model or variant name of the tyre.
         size (Optional[str]): Tyre size specification (e.g. "205/55 R16").
@@ -31,6 +32,7 @@ class Tyre(BaseModel):
         season (Optional[str]): Season classification (e.g. "summer", "winter", "all-season").
         eu_label (EULabel): EU label object containing efficiency/safety ratings (required).
         features (Optional[list]): List of additional features or attributes (e.g. ["run-flat", "noise-reduced"]).
+        description (Optional[str]): Optional description of the tyre.
         price (Optional[float]): Unit price of the tyre.
         currency (Optional[str]): Currency code for the price (e.g. "EUR", "USD").
         availability (bool): Whether the tyre is available for purchase. Defaults to False.
@@ -45,6 +47,7 @@ class Tyre(BaseModel):
         - eu_label is expected to be an instance of EULabel representing official EU tyre ratings.
     """
     tyre_id: Optional[str] = None
+    name: Optional[str] = None
     brand: Optional[str] = None
     model: Optional[str] = None
     size: Optional[str] = None
@@ -53,6 +56,7 @@ class Tyre(BaseModel):
     season: Optional[str] = None
     eu_label: EULabel
     features: Optional[list] = None
+    description: Optional[str] = None
     price: Optional[float] = None
     currency: Optional[str] = None
     availability: bool = False
