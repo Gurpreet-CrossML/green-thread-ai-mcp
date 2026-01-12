@@ -1,1 +1,1 @@
-BASE_URL = "http://renkaat.staging.rehvid.we.ee/chat-api/"
+BASE_URL = "https://renkaat247.fi/chat-api/"
