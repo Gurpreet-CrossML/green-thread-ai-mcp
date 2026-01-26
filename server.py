@@ -52,7 +52,8 @@ def list_tyres(
     rolling_resistance: Optional[str] = None,
     price_from: Optional[float] = None,
     price_to: Optional[float] = None,
-    vehicle_type: Optional[List[Literal['car', 'suv', 'van', 'moto', 'truck', 'otr']]] = None
+    vehicle_type: Optional[List[Literal['car', 'suv', 'van', 'moto', 'truck', 'otr']]] = None,
+    limit: int = 5,
 ) -> Tyres:
     """
     List all available tyres in the database.
@@ -71,6 +72,7 @@ def list_tyres(
         price_from (Optional[float]): Filter by minimum price.
         price_to (Optional[float]): Filter by maximum price.
         vehicle_type (Optional[List[Literal['car', 'suv', 'van', 'moto', 'truck', 'otr']]]): Filter by type of vehicles.
+        limit (int): Maximum number of tyres to return.
 
     Returns:
         Tyres: A paginated collection of Tyre items.
@@ -106,7 +108,7 @@ def list_tyres(
         
         # Form the Tyres object and return it.
         return Tyres(**{
-            "tyres": [Tyre(**item) for item in data],
+            "tyres": [Tyre(**item) for item in data[:limit]], # Limit the number of tyres returned
             "current_page": current_page,
             "total_pages": total_pages
         })
