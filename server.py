@@ -52,6 +52,7 @@ def list_tyres(
     rolling_resistance: Optional[str] = None,
     price_from: Optional[float] = None,
     price_to: Optional[float] = None,
+    is_premium: Optional[bool] = None,
     vehicle_type: Optional[List[Literal['car', 'suv', 'van', 'moto', 'truck', 'otr']]] = None,
     limit: int = 5,
 ) -> Tyres:
@@ -71,6 +72,7 @@ def list_tyres(
         rolling_resistance (Optional[str]): Filter by rolling resistance class.
         price_from (Optional[float]): Filter by minimum price.
         price_to (Optional[float]): Filter by maximum price.
+        is_premium (Optional[bool]): Filter by premium status.
         vehicle_type (Optional[List[Literal['car', 'suv', 'van', 'moto', 'truck', 'otr']]]): Filter by type of vehicles.
         limit (int): Maximum number of tyres to return.
 
@@ -94,6 +96,7 @@ def list_tyres(
             **({"rolling_resistance": rolling_resistance} if rolling_resistance is not None else {}),
             **({"price_from": price_from} if price_from is not None else {}),
             **({"price_to": price_to} if price_to is not None else {}),
+            **({"is_premium": is_premium} if is_premium is not None else {}), 
             **({"vehicle_type": ','.join(vehicle_type)} if vehicle_type is not None and len(vehicle_type) > 0 else {})
         }
     )
