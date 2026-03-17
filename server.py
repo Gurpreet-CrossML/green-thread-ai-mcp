@@ -1,12 +1,14 @@
 from typing import Optional, List, Literal
 
 import requests
+import os
 
 from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
 
 from schemas import Tyres, Tyre
 from utils import get_url, get_basic_auth, get_headers
+from constants import TYRE_SEARCH_ENDPOINT
 from loggings import logger
 
 mcp = FastMCP(
@@ -149,6 +151,39 @@ def get_tyre_by_id(tyre_id: str) -> Optional[Tyre]:
             f"{response.status_code} - {response.text}"
         )
         return None
+
+
+@mcp.tool()
+async def predict_oem_tyre_size_from_query(
+    brand: str,
+    model: str,
+    year: int
+) -> str:
+    """
+    Predict OEM tyre size using online vehicle specification sources.
+
+    Parameters
+    ----------
+    brand : str
+        Vehicle manufacturer (e.g., Maruti Suzuki)
+    model : str
+        Vehicle model name (e.g., Vitara Brezza)
+    year : int
+        Manufacturing year of the vehicle
+    Returns
+    -------
+    str: OEM tyre size as a string.
+     Example: "215/60R16"
+    """
+
+    url = get_url(f"{TYRE_SEARCH_ENDPOINT}{brand}/{model}/{year}")
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        return response.text
+    else:
+        logger.error(f"Failed to fetch tyre size: {response.status_code} - {response.text}")
+        return f"Error: Unable to find tyre size for {brand} {model} {year}"
 
 
 if __name__ == "__main__":
