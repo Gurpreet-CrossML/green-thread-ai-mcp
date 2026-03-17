@@ -175,15 +175,10 @@ def get_oem_tyre_size(
     model = quote(model if model.strip() else "modelnotfound")
 
     url = get_url(f"tyre-search/{brand}/{model}/{year}")
-    response = requests.post(
+    response = requests.get(
         url,
         auth=get_basic_auth(),
-        headers=get_headers(),
-        json={
-            "brand": brand,
-            "model": model,
-            "year": year
-        }
+        headers=get_headers()
     )
 
     if response.status_code == 200:
