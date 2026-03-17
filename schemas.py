@@ -228,3 +228,16 @@ class Tyres(BaseModel):
         if current_page is not None:
             return current_page > 1
         return None
+
+class VehicleOEMTyres(BaseModel):
+    """
+    Model representing a collection of tyre options for a specific vehicle OEM.
+
+    Attributes:
+        status (str): The status of the response (e.g. "success").
+        options (list[str]): A list of tyre size options associated with the OEM (e.g. ["245/35 R20", "225/55 R17"]).
+        message (str, optional): An optional message providing additional information (e.g. "Brand not found").
+    """
+    status: str
+    options: list[str] = []
+    message: Optional[str] = None

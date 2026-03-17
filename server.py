@@ -1,11 +1,12 @@
 from typing import Optional, List, Literal
+from urllib.parse import quote
 
 import requests
 
 from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
 
-from schemas import Tyres, Tyre
+from schemas import Tyres, Tyre, VehicleOEMTyres
 from utils import get_url, get_basic_auth, get_headers
 from loggings import logger
 
@@ -149,6 +150,52 @@ def get_tyre_by_id(tyre_id: str) -> Optional[Tyre]:
             f"{response.status_code} - {response.text}"
         )
         return None
+
+
+
+@mcp.tool()
+def get_oem_tyre_size(
+    brand: str,
+    model: str,
+    year: int
+) -> VehicleOEMTyres:
+    """
+    Retrieve the original equipment manufacturer (OEM) tyre size for a given vehicle.
+
+    Args:
+        brand (str): The brand of the vehicle.
+        model (str): The model of the vehicle.
+        year (int): The manufacturing year of the vehicle.
+
+    Returns:
+        VehicleOEMTyres: An object containing the OEM tyre sizes for the specified vehicle.
+    """
+
+    brand = quote(brand if brand.strip() else "brandnotfound")
+    model = quote(model if model.strip() else "modelnotfound")
+
+    url = get_url(f"tyre-search/{brand}/{model}/{year}")
+    response = requests.post(
+        url,
+        auth=get_basic_auth(),
+        headers=get_headers(),
+        json={
+            "brand": brand,
+            "model": model,
+            "year": year
+        }
+    )
+
+    if response.status_code == 200:
+        result = response.json()
+        data = result.get("data", {})
+        return VehicleOEMTyres(**data)
+    else:
+        logger.error(
+            f"Failed to retrieve OEM tyre size for {brand} {model} {year}: "
+            f"{response.status_code} - {response.text}"
+        )
+        return VehicleOEMTyres(status="error", options=[], message=response.text)
 
 
 if __name__ == "__main__":
