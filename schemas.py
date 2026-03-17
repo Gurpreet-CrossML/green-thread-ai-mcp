@@ -41,7 +41,6 @@ class Tyre(BaseModel):
         buy_link (Optional[str]): URL linking to a purchase page for the tyre.
         image_url (Optional[str]): URL to an image of the tyre.
         is_premium (Optional[bool]): Filter by premium status.
-        season_title (Optional[str]): Season title (e.g. 'Kesärenkaat').
 
     Notes:
         - This class is intended as a Pydantic BaseModel for validation and serialization.
@@ -66,8 +65,7 @@ class Tyre(BaseModel):
     delivery_time_hrs: Optional[int] = None
     buy_link: Optional[str] = None
     image_url: Optional[str] = None
-    is_premium: Optional[bool] = False
-    season_title: Optional[str] = None
+    is_premium: Optional[bool] = False,
 
     def __init__(self, **data):
         """
