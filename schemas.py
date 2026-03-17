@@ -228,3 +228,15 @@ class Tyres(BaseModel):
         if current_page is not None:
             return current_page > 1
         return None
+
+
+class TyreSizePredictionResponse(BaseModel):
+    """
+    Response model for tyre size prediction.
+
+    Attributes:
+        status (str): The status of the prediction (e.g., 'success').
+        options (list[str]): A list of predicted tyre sizes.
+    """
+    status: str
+    options: list[str]
