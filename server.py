@@ -173,8 +173,6 @@ def get_oem_tyre_size(
 
     brand = quote(brand if brand.strip() else "brandnotfound")
     model = quote(model if model.strip() else "modelnotfound")
-    
-    logger.info(f"Fetching OEM tyre size for {brand} {model} {year}")
 
     url = get_url(f"tyre-search/{brand}/{model}/{year}")
     response = requests.get(
@@ -185,8 +183,6 @@ def get_oem_tyre_size(
 
     if response.status_code == 200:
         result = response.json()
-        logger.info(f"Successfully retrieved OEM tyre size for {brand} {model} {year}: {result}")
-        # data = result.get("data", {})
         return VehicleOEMTyres(**result)
     else:
         logger.error(
