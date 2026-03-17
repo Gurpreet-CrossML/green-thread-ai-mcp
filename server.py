@@ -92,7 +92,6 @@ def list_tyres(
             **({"load_index": load_index} if load_index is not None else {}),
             **({"speed_rating": speed_rating} if speed_rating is not None else {}),
             **({"season": ','.join(season)} if season is not None and len(season) > 0 else {}),
-            **({"season_title": season_title} if season_title is not None else {}),
             **({"wet_grip": wet_grip} if wet_grip is not None else {}),
             **({"noise_db": noise_db} if noise_db is not None else {}),
             **({"rolling_resistance": rolling_resistance} if rolling_resistance is not None else {}),
