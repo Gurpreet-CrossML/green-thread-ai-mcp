@@ -10,6 +10,7 @@ from schemas import Tyres, Tyre
 from utils import get_url, get_basic_auth, get_headers
 from constants import TYRE_SEARCH_ENDPOINT
 from loggings import logger
+from urllib.parse import quote
 
 mcp = FastMCP(
     name=str(
@@ -24,6 +25,8 @@ mcp = FastMCP(
             "127.0.0.1:*",
             "localhost",
             "localhost:*",
+            "0.0.0.0",
+            "0.0.0.0:*",
             "ec2-44-197-115-243.compute-1.amazonaws.com",
             "ec2-44-197-115-243.compute-1.amazonaws.com:*",
             "ec2-13-49-41-40.eu-north-1.compute.amazonaws.com",
@@ -36,6 +39,7 @@ mcp = FastMCP(
             "https://ec2-13-49-41-40.eu-north-1.compute.amazonaws.com",
             "http://localhost",
             "http://localhost:*",
+            "http://0.0.0.0:*",
         ],
     ),
 )
@@ -176,7 +180,9 @@ async def predict_oem_tyre_size_from_query(
      Example: "215/60R16"
     """
 
-    url = get_url(f"{TYRE_SEARCH_ENDPOINT}{brand}/{model}/{year}")
+    url = get_url(
+        f"{TYRE_SEARCH_ENDPOINT}{quote(brand)}/{quote(model)}/{year}"
+    )
     response = requests.get(url)
 
     if response.status_code == 200:
