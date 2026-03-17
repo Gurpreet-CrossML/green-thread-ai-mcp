@@ -1,16 +1,14 @@
 from typing import Optional, List, Literal
+from urllib.parse import quote
 
 import requests
-import os
 
 from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
 
-from schemas import Tyres, Tyre, TyreSizePredictionResponse
+from schemas import Tyres, Tyre, VehicleOEMTyres
 from utils import get_url, get_basic_auth, get_headers
-from constants import TYRE_SEARCH_ENDPOINT
 from loggings import logger
-from urllib.parse import quote
 
 mcp = FastMCP(
     name=str(
@@ -25,8 +23,6 @@ mcp = FastMCP(
             "127.0.0.1:*",
             "localhost",
             "localhost:*",
-            "0.0.0.0",
-            "0.0.0.0:*",
             "ec2-44-197-115-243.compute-1.amazonaws.com",
             "ec2-44-197-115-243.compute-1.amazonaws.com:*",
             "ec2-13-49-41-40.eu-north-1.compute.amazonaws.com",
@@ -39,7 +35,6 @@ mcp = FastMCP(
             "https://ec2-13-49-41-40.eu-north-1.compute.amazonaws.com",
             "http://localhost",
             "http://localhost:*",
-            "http://0.0.0.0:*",
         ],
     ),
 )
@@ -157,69 +152,50 @@ def get_tyre_by_id(tyre_id: str) -> Optional[Tyre]:
         return None
 
 
+
 @mcp.tool()
-async def predict_oem_tyre_size_from_query(
+def get_oem_tyre_size(
     brand: str,
     model: str,
     year: int
-) -> TyreSizePredictionResponse:
+) -> VehicleOEMTyres:
     """
-    Predict OEM tyre size using online vehicle specification sources.
+    Retrieve the original equipment manufacturer (OEM) tyre size for a given vehicle.
 
-    Parameters
-    ----------
-    brand : str
-        Vehicle manufacturer (e.g., Maruti Suzuki)
-    model : str
-        Vehicle model name (e.g., Vitara Brezza)
-    year : int
-        Manufacturing year of the vehicle
-    Returns
-    -------
-    TyreSizePredictionResponse: OEM tyre size prediction response.
+    Args:
+        brand (str): The brand of the vehicle.
+        model (str): The model of the vehicle.
+        year (int): The manufacturing year of the vehicle.
+
+    Returns:
+        VehicleOEMTyres: An object containing the OEM tyre sizes for the specified vehicle.
     """
 
-    if not brand or brand.strip() == "":
-        return TyreSizePredictionResponse(status="error", options=["Brand not found"])
-    if not model or model.strip() == "":
-        return TyreSizePredictionResponse(status="error", options=["Model not found"])
+    brand = quote(brand if brand.strip() else "brandnotfound")
+    model = quote(model if model.strip() else "modelnotfound")
 
-    url = get_url(
-        f"{TYRE_SEARCH_ENDPOINT}{quote(brand)}/{quote(model)}/{year}"
+    url = get_url(f"tyre-search/{brand}/{model}/{year}")
+    response = requests.post(
+        url,
+        auth=get_basic_auth(),
+        headers=get_headers(),
+        json={
+            "brand": brand,
+            "model": model,
+            "year": year
+        }
     )
-    try:
-        response = requests.get(url)
-        if response.status_code == 200:
-            result = response.json()
-            if result.get("status") == "success":
-                options = result.get("options", [])
-                return TyreSizePredictionResponse(
-                    status="success",
-                    options=options if options else ["No tyre sizes found"]
-                )
-            else:
-                return TyreSizePredictionResponse(
-                    status="error",
-                    options=[result.get("message", "An unknown error occurred")]
-                )
-        elif response.status_code == 404:
-            result = response.json()
-            return TyreSizePredictionResponse(
-                status="error",
-                options=[result.get("message", "Not found")]
-            )
-        else:
-            logger.error(f"Failed to fetch tyre size: {response.status_code} - {response.text}")
-            return TyreSizePredictionResponse(
-                status="error",
-                options=[f"Error: Unable to find tyre size for {brand} {model} {year}"]
-            )
-    except Exception as e:
-        logger.error(f"Error in predict_oem_tyre_size_from_query: {str(e)}")
-        return TyreSizePredictionResponse(
-            status="error",
-            options=["Error occurred while fetching tyre size"]
+
+    if response.status_code == 200:
+        result = response.json()
+        data = result.get("data", {})
+        return VehicleOEMTyres(**data)
+    else:
+        logger.error(
+            f"Failed to retrieve OEM tyre size for {brand} {model} {year}: "
+            f"{response.status_code} - {response.text}"
         )
+        return VehicleOEMTyres(status="error", options=[], message=response.text)
 
 
 if __name__ == "__main__":

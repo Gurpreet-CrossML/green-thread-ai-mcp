@@ -229,14 +229,15 @@ class Tyres(BaseModel):
             return current_page > 1
         return None
 
-
-class TyreSizePredictionResponse(BaseModel):
+class VehicleOEMTyres(BaseModel):
     """
-    Response model for tyre size prediction.
+    Model representing a collection of tyre options for a specific vehicle OEM.
 
     Attributes:
-        status (str): The status of the prediction (e.g., 'success').
-        options (list[str]): A list of predicted tyre sizes.
+        status (str): The status of the response (e.g. "success").
+        options (list[str]): A list of tyre size options associated with the OEM (e.g. ["245/35 R20", "225/55 R17"]).
+        message (str, optional): An optional message providing additional information (e.g. "Brand not found").
     """
     status: str
-    options: list[str]
+    options: list[str] = []
+    message: Optional[str] = None
