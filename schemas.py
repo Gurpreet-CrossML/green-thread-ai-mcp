@@ -30,6 +30,7 @@ class Tyre(BaseModel):
         load_index (Optional[int]): Numeric load carrying capacity index.
         speed_rating (Optional[str]): Speed rating letter (e.g. "H", "V").
         season (Optional[str]): Season classification (e.g. "summer", "winter", "all-season").
+        season_title (Optional[str]): Human-readable season title.
         eu_label (EULabel): EU label object containing efficiency/safety ratings (required).
         features (Optional[list]): List of additional features or attributes (e.g. ["run-flat", "noise-reduced"]).
         description (Optional[str]): Optional description of the tyre.
@@ -55,6 +56,7 @@ class Tyre(BaseModel):
     load_index: Optional[int] = None
     speed_rating: Optional[str] = None
     season: Optional[str] = None
+    season_title: Optional[str] = None
     eu_label: EULabel
     features: Optional[list] = None
     description: Optional[str] = None
@@ -65,7 +67,7 @@ class Tyre(BaseModel):
     delivery_time_hrs: Optional[int] = None
     buy_link: Optional[str] = None
     image_url: Optional[str] = None
-    is_premium: Optional[bool] = False,
+    is_premium: Optional[bool] = False
 
     def __init__(self, **data):
         """
