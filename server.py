@@ -47,7 +47,7 @@ def list_tyres(
     tyre_size: Optional[str] = None,
     load_index: Optional[int] = None,
     speed_rating: Optional[str] = None,
-    season: Optional[List[Literal['summer', 'lamel', 'all_season']]] = None,
+    season: Optional[str] = None,
     wet_grip: Optional[str] = None,
     noise_db: Optional[int] = None,
     rolling_resistance: Optional[str] = None,
@@ -67,7 +67,7 @@ def list_tyres(
         tyre_size (Optional[str]): Filter by tyre size.
         load_index (Optional[int]): Filter by load index.
         speed_rating (Optional[str]): Filter by speed rating.
-        season (Optional[List[Literal['summer', 'lamel', 'all_season']]]): Filter by season.
+        season (Optional[str]): Filter by season.
         wet_grip (Optional[str]): Filter by wet grip class.
         noise_db (Optional[int]): Filter by noise level in dB.
         rolling_resistance (Optional[str]): Filter by rolling resistance class.
@@ -91,7 +91,7 @@ def list_tyres(
             **({"tyre_size": tyre_size} if tyre_size is not None else {}),
             **({"load_index": load_index} if load_index is not None else {}),
             **({"speed_rating": speed_rating} if speed_rating is not None else {}),
-            **({"season": ','.join(season)} if season is not None and len(season) > 0 else {}),
+            **({"season": season} if season is not None else {}),
             **({"wet_grip": wet_grip} if wet_grip is not None else {}),
             **({"noise_db": noise_db} if noise_db is not None else {}),
             **({"rolling_resistance": rolling_resistance} if rolling_resistance is not None else {}),
