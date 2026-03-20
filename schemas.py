@@ -29,7 +29,7 @@ class Tyre(BaseModel):
         size (Optional[str]): Tyre size specification (e.g. "205/55 R16").
         load_index (Optional[int]): Numeric load carrying capacity index.
         speed_rating (Optional[str]): Speed rating letter (e.g. "H", "V").
-        season (Optional[str]): Season classification (e.g. "summer", "winter", "all-season").
+        season (Optional[str]): Season classification (e.g. "summer", "winter", "all-season","studded").
         season_title (Optional[str]): Human-readable season title.
         eu_label (EULabel): EU label object containing efficiency/safety ratings (required).
         features (Optional[list]): List of additional features or attributes (e.g. ["run-flat", "noise-reduced"]).

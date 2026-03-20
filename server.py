@@ -47,7 +47,7 @@ def list_tyres(
     tyre_size: Optional[str] = None,
     load_index: Optional[int] = None,
     speed_rating: Optional[str] = None,
-    season: Optional[List[Literal['summer', 'lamel', 'all_season']]] = None,
+    season: Optional[List[Literal['summer', 'lamel', 'all_season','studded']]] = None,
     wet_grip: Optional[str] = None,
     noise_db: Optional[int] = None,
     rolling_resistance: Optional[str] = None,
@@ -67,7 +67,7 @@ def list_tyres(
         tyre_size (Optional[str]): Filter by tyre size.
         load_index (Optional[int]): Filter by load index.
         speed_rating (Optional[str]): Filter by speed rating.
-        season (Optional[List[Literal['summer', 'lamel', 'all_season']]]): Filter by season.
+        season (Optional[List[Literal['summer', 'lamel', 'all_season','studded']]]): Filter by season.
         wet_grip (Optional[str]): Filter by wet grip class.
         noise_db (Optional[int]): Filter by noise level in dB.
         rolling_resistance (Optional[str]): Filter by rolling resistance class.
