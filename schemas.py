@@ -231,6 +231,7 @@ class Tyres(BaseModel):
             return current_page > 1
         return None
 
+
 class VehicleOEMTyres(BaseModel):
     """
     Model representing a collection of tyre options for a specific vehicle OEM.
@@ -243,3 +244,29 @@ class VehicleOEMTyres(BaseModel):
     status: str
     options: list[str] = []
     message: Optional[str] = None
+
+
+class VehicleOEMTyresResponse(BaseModel):
+    """
+    Model representing a collection of tyre options and other details for a specific vehicle OEM.
+
+    Args:
+    predicted_oem_front_tyre_size (Optional[str]): The predicted OEM front tyre size for the vehicle (e.g. "245/35R20"). None if not available.
+    oem_front_tyre_sizes (list[str]): A list of OEM front tyre size options for the vehicle (e.g. ["245/35R20", "225/55R17"]).
+    predicted_oem_rear_tyre_size (Optional[str]): The predicted OEM rear tyre size for the vehicle (e.g. "275/30R20"). None if not available.
+    oem_rear_tyre_sizes (list[str]): A list of OEM rear tyre size options for the vehicle (e.g. ["275/30R20", "255/40R18"]).
+    confidence (Optional[float]): Confidence score for the predicted tyre sizes, on a scale from 0.0 to 1.0. None if not available.
+    wheel_diameter_inches (Optional[int]): The estimated wheel diameter in inches (e.g. 20). None if not available.
+    rim_type_estimate (Optional[str]): An estimate of the rim type (e.g. "alloy", "steel"). None if not available.
+    load_index (Optional[int]): The estimated load index for the tyres (e.g. 95). None if not available.
+    speed_rating (Optional[str]): The estimated speed rating for the tyres (e.g. "Y"). None if not available.
+    """
+    predicted_oem_front_tyre_size: Optional[str] = None
+    oem_front_tyre_sizes: list[str] = []
+    predicted_oem_rear_tyre_size: Optional[str] = None
+    oem_rear_tyre_sizes: list[str] = []
+    confidence: Optional[float] = None
+    wheel_diameter_inches: Optional[int] = None
+    rim_type_estimate: Optional[str] = None
+    load_index: Optional[int] = None
+    speed_rating: Optional[str] = None
