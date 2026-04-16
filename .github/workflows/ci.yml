@@ -84,6 +84,7 @@ jobs:
               -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
               -e API_USERNAME=${{ secrets.API_USERNAME }} \
               -e API_PASSWORD=${{ secrets.API_PASSWORD }} \
+              -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
               ${{env.ECR_REGISTRY}}/${{env.ECR_REPOSITORY}}:${{env.IMAGE_TAG}}
 
           echo '[+] Cleaning up old Docker images...'
