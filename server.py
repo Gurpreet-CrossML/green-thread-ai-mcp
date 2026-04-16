@@ -1,12 +1,18 @@
+import json
+
 from typing import Optional, List, Literal
 from urllib.parse import quote
 
 import requests
 
+from google import genai
+from google.genai import types
 from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
 
-from schemas import Tyres, Tyre, VehicleOEMTyres
+from constants import SYSTEM_PROMPT, USER_PROMPT,  GEMINI_MODEL, RESPONSE_SCHEMA
+from creds import GEMINI_API_KEY
+from schemas import Tyres, Tyre, VehicleOEMTyresResponse
 from utils import get_url, get_basic_auth, get_headers
 from loggings import logger
 
@@ -54,7 +60,8 @@ def list_tyres(
     price_from: Optional[float] = None,
     price_to: Optional[float] = None,
     is_premium: Optional[bool] = None,
-    vehicle_type: Optional[List[Literal['car', 'suv', 'van', 'moto', 'truck', 'otr']]] = None,
+    vehicle_type: Optional[List[Literal['car', 'suv',
+                                        'van', 'moto', 'truck', 'otr']]] = None,
     limit: int = 5,
 ) -> Tyres:
     """
@@ -97,7 +104,7 @@ def list_tyres(
             **({"rolling_resistance": rolling_resistance} if rolling_resistance is not None else {}),
             **({"price_from": price_from} if price_from is not None else {}),
             **({"price_to": price_to} if price_to is not None else {}),
-            **({"is_premium": is_premium} if is_premium is not None else {}), 
+            **({"is_premium": is_premium} if is_premium is not None else {}),
             **({"vehicle_type": ','.join(vehicle_type)} if vehicle_type is not None and len(vehicle_type) > 0 else {})
         }
     )
@@ -109,10 +116,11 @@ def list_tyres(
         data = result.get("data", [])
         current_page = result.get("current_page", None)
         total_pages = result.get("total_pages", None)
-        
+
         # Form the Tyres object and return it.
         return Tyres(**{
-            "tyres": [Tyre(**item) for item in data[:limit]], # Limit the number of tyres returned
+            # Limit the number of tyres returned
+            "tyres": [Tyre(**item) for item in data[:limit]],
             "current_page": current_page,
             "total_pages": total_pages
         })
@@ -152,44 +160,61 @@ def get_tyre_by_id(tyre_id: str) -> Optional[Tyre]:
         return None
 
 
-
 @mcp.tool()
 def get_oem_tyre_size(
     brand: str,
     model: str,
     year: int
-) -> VehicleOEMTyres:
-    """
-    Retrieve the original equipment manufacturer (OEM) tyre size for a given vehicle.
+) -> VehicleOEMTyresResponse:
 
-    Args:
-        brand (str): The brand of the vehicle.
-        model (str): The model of the vehicle.
-        year (int): The manufacturing year of the vehicle.
+    client = genai.Client(api_key=GEMINI_API_KEY)
+    query = USER_PROMPT.format(brand=brand, model=model, year=year)
 
-    Returns:
-        VehicleOEMTyres: An object containing the OEM tyre sizes for the specified vehicle.
-    """
+    contents = [
+        types.Content(
+            role="user",
+            parts=[
+                types.Part.from_text(text=query)
+            ]
+        )
+    ]
 
-    brand = quote(brand if brand.strip() else "brandnotfound")
-    model = quote(model if model.strip() else "modelnotfound")
+    tools = [
+        types.Tool(
+            google_search=types.GoogleSearch()
+        ),
+    ]
 
-    url = get_url(f"tyre-search/{brand}/{model}/{year}")
-    response = requests.get(
-        url,
-        auth=get_basic_auth(),
-        headers=get_headers()
+    config = types.GenerateContentConfig(
+        thinking_config=types.ThinkingConfig(
+            thinking_level=types.ThinkingLevel.LOW,
+        ),
+        tools=tools,
+        system_instruction=[
+            types.Part.from_text(text=SYSTEM_PROMPT)
+        ],
+        response_mime_type="application/json",
+        response_schema=RESPONSE_SCHEMA
     )
 
-    if response.status_code == 200:
-        result = response.json()
-        return VehicleOEMTyres(**result)
-    else:
+    try:
+        response = client.models.generate_content(
+            model=GEMINI_MODEL,
+            contents=contents,
+            config=config
+        )
+
+        data = {}
+        if response and isinstance(response.text, str):
+            data = json.loads(response.text)
+
+        return VehicleOEMTyresResponse(**data)
+    except Exception as e:
         logger.error(
             f"Failed to retrieve OEM tyre size for {brand} {model} {year}: "
-            f"{response.status_code} - {response.text}"
+            f"{str(e)}"
         )
-        return VehicleOEMTyres(status="error", options=[], message=response.text)
+        return VehicleOEMTyresResponse(**{})
 
 
 if __name__ == "__main__":

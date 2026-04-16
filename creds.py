@@ -21,3 +21,11 @@ if not re.sub(r'\s', '', PASSWORD):
     raise NotImplementedError(
         'Before running the server you need to export `API_PASSWORD` in the enviroment, or add it in a `.env` file.'
     )
+
+
+# API key from the enviroment variables
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
+if not re.sub(r'\s', '', GEMINI_API_KEY):
+    raise NotImplementedError(
+        'Before running the server you need to export `GEMINI_API_KEY` in the enviroment, or add it in a `.env` file.'
+    )
