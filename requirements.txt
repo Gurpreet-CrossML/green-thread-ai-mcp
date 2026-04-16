@@ -1,3 +1,7 @@
 requests
 # MCP Server
 fastmcp
+# For loading environment variables from .env file
+python-dotenv
+# Google Gemini API client
+google-genai
