@@ -31,7 +31,7 @@ Year: {year}
 </input>
 """
 
-GEMINI_MODEL = "gemini-3-flash-preview"
+GEMINI_MODEL = "gemini-3.1-flash-lite-preview"
 
 RESPONSE_SCHEMA = types.Schema(
     type=types.Type.OBJECT,
