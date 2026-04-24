@@ -160,61 +160,61 @@ def get_tyre_by_id(tyre_id: str) -> Optional[Tyre]:
         return None
 
 
-@mcp.tool()
-def get_oem_tyre_size(
-    brand: str,
-    model: str,
-    year: int
-) -> VehicleOEMTyresResponse:
+# @mcp.tool()
+# def get_oem_tyre_size(
+#     brand: str,
+#     model: str,
+#     year: int
+# ) -> VehicleOEMTyresResponse:
 
-    client = genai.Client(api_key=GEMINI_API_KEY)
-    query = USER_PROMPT.format(brand=brand, model=model, year=year)
+#     client = genai.Client(api_key=GEMINI_API_KEY)
+#     query = USER_PROMPT.format(brand=brand, model=model, year=year)
 
-    contents = [
-        types.Content(
-            role="user",
-            parts=[
-                types.Part.from_text(text=query)
-            ]
-        )
-    ]
+#     contents = [
+#         types.Content(
+#             role="user",
+#             parts=[
+#                 types.Part.from_text(text=query)
+#             ]
+#         )
+#     ]
 
-    tools = [
-        types.Tool(
-            google_search=types.GoogleSearch()
-        ),
-    ]
+#     tools = [
+#         types.Tool(
+#             google_search=types.GoogleSearch()
+#         ),
+#     ]
 
-    config = types.GenerateContentConfig(
-        thinking_config=types.ThinkingConfig(
-            thinking_level=types.ThinkingLevel.LOW,
-        ),
-        tools=tools,
-        system_instruction=[
-            types.Part.from_text(text=SYSTEM_PROMPT)
-        ],
-        response_mime_type="application/json",
-        response_schema=RESPONSE_SCHEMA
-    )
+#     config = types.GenerateContentConfig(
+#         thinking_config=types.ThinkingConfig(
+#             thinking_level=types.ThinkingLevel.LOW,
+#         ),
+#         tools=tools,
+#         system_instruction=[
+#             types.Part.from_text(text=SYSTEM_PROMPT)
+#         ],
+#         response_mime_type="application/json",
+#         response_schema=RESPONSE_SCHEMA
+#     )
 
-    try:
-        response = client.models.generate_content(
-            model=GEMINI_MODEL,
-            contents=contents,
-            config=config
-        )
+#     try:
+#         response = client.models.generate_content(
+#             model=GEMINI_MODEL,
+#             contents=contents,
+#             config=config
+#         )
 
-        data = {}
-        if response and isinstance(response.text, str):
-            data = json.loads(response.text)
+#         data = {}
+#         if response and isinstance(response.text, str):
+#             data = json.loads(response.text)
 
-        return VehicleOEMTyresResponse(**data)
-    except Exception as e:
-        logger.error(
-            f"Failed to retrieve OEM tyre size for {brand} {model} {year}: "
-            f"{str(e)}"
-        )
-        return VehicleOEMTyresResponse(**{})
+#         return VehicleOEMTyresResponse(**data)
+#     except Exception as e:
+#         logger.error(
+#             f"Failed to retrieve OEM tyre size for {brand} {model} {year}: "
+#             f"{str(e)}"
+#         )
+#         return VehicleOEMTyresResponse(**{})
 
 
 if __name__ == "__main__":
