@@ -1,85 +1,49 @@
-from google.genai import types
+"""Store registry for the multi-tenant tyre database service.
 
-BASE_URL = "https://renkaat247.fi/chat-api/"
-
-SYSTEM_PROMPT = """You are a car enthusiast, and a tyre expert. You have a deep understanding of different types of tyres, seasonal variations, load indexes, speed ratings, and OEM fitments of all brand/model cars in the world.
-</role>
-
-<goal>
-Your ultimate goal is to go online and detect the information about OEM fitments for specific brand, model, and year of vehicles.
-</goal>
-
-<output_requirements>
-- Provide a JSON output with the following format:
-{
-    \"predicted_oem_front_tyre_size\": <string>,
-    \"oem_front_tyre_sizes\": [<string>, ...],
-    \"predicted_oem_rear_tyre_size\": <string>,
-    \"oem_rear_tyre_sizes\": [<string>, ...],
-    \"confidence\": <float between 0 and 1>,
-    \"wheel_diameter_inches\": <integer>,
-    \"rim_type_estimate\": <string>,
-    \"load_index\": <integer>,
-    \"speed_rating\": <string>,
-}
-</output_requirements>"""
-
-USER_PROMPT = """<input>
-Brand: {brand}
-Model: {model}
-Year: {year}
-</input>
+The calling store is resolved from an HTTP header (see `utils.resolve_store`),
+never from a tool argument. Keeping it off the tool schema means the language
+model can neither see the tenant nor choose it, so a hallucination or a prompt
+injection in a customer message cannot make one store's catalogue serve another.
 """
 
-GEMINI_MODEL = "gemini-3.1-flash-lite-preview"
+# Header carrying the store code on every backend -> MCP call.
+STORE_HEADER = "x-store-code"
 
-RESPONSE_SCHEMA = types.Schema(
-    type=types.Type.OBJECT,
-    required=[],
-    properties={
-        "predicted_oem_front_tyre_size": types.Schema(
-            type=types.Type.STRING,
-            description="The most likely OEM front tyre size for the given brand, model, and year of the vehicle, use format 'width/heightRdiameter' e.g., '205/55R16'."
-        ),
-        "oem_front_tyre_sizes": types.Schema(
-            type=types.Type.ARRAY,
-            description="A list of all possible OEM front tyre sizes for the given brand, model, and year of the vehicle, use format 'width/heightRdiameter' e.g., '205/55R16'.",
-            items=types.Schema(
-                type=types.Type.STRING,
-                description="An OEM front tyre size for the given brand, model, and year of the vehicle, use format 'width/heightRdiameter' e.g., '205/55R16'."
-            )
-        ),
-        "predicted_oem_rear_tyre_size": types.Schema(
-            type=types.Type.STRING,
-            description="The most likely OEM rear tyre size for the given brand, model, and year of the vehicle, use format 'width/heightRdiameter' e.g., '205/55R16'."
-        ),
-        "oem_rear_tyre_sizes": types.Schema(
-            type=types.Type.ARRAY,
-            description="A list of all possible OEM rear tyre sizes for the given brand, model, and year of the vehicle, use format 'width/heightRdiameter' e.g., '205/55R16'.",
-            items=types.Schema(
-                type=types.Type.STRING,
-                description="An OEM rear tyre size for the given brand, model, and year of the vehicle, use format 'width/heightRdiameter' e.g., '205/55R16'."
-            )
-        ),
-        "confidence": types.Schema(
-            type=types.Type.NUMBER,
-            description="The confidence level of the predicted tyre sizes."
-        ),
-        "wheel_diameter_inches": types.Schema(
-            type=types.Type.INTEGER,
-            description="The diameter of the wheel in inches."
-        ),
-        "rim_type_estimate": types.Schema(
-            type=types.Type.STRING,
-            description="An estimate of the rim type."
-        ),
-        "load_index": types.Schema(
-            type=types.Type.INTEGER,
-            description="The load index of the tyre."
-        ),
-        "speed_rating": types.Schema(
-            type=types.Type.STRING,
-            description="The speed rating of the tyre."
-        )
-    }
+# Header carrying the shared backend -> MCP secret.
+AUTH_HEADER = "authorization"
+
+
+# Anything a tool raises is fed straight back into the language model's context,
+# so tool errors must not carry internals — the list of valid store codes, or the
+# fact that a shared secret exists, would otherwise end up in the model's context
+# and could be repeated to a customer.
+#
+# The store is resolved from a header, not a tool argument, so the model cannot
+# correct this failure by calling the tool differently. The message therefore
+# tells it not to retry: without that it will burn a retry (see the tool
+# reliability rules in the agent prompt) before giving up anyway.
+#
+# The real reason is always logged server-side.
+CATALOGUE_UNAVAILABLE_ERROR = (
+    "The tyre catalogue is unavailable for this request. Do not retry this tool. "
+    "Apologise to the customer, return no recommendations, and suggest they try "
+    "again shortly."
 )
+
+
+# Every store runs the same catalogue API software and shares one credential
+# pair (`API_USERNAME` / `API_PASSWORD`). What differs — and what therefore
+# selects the store — is the host: each `base_url` serves that store's own
+# products, prices, buy-links and language.
+#
+# Because the credentials are shared, they live in `creds.py` rather than here.
+# If a store ever needs its own, add `username_env` / `password_env` to its
+# record and resolve them in `creds.get_store_credentials`.
+ACTIVE_STORES = {
+    "renkaat247": {
+        "base_url": "https://renkaat247.fi/chat-api/",
+    },
+    "rehvid": {
+        "base_url": "https://rehvid.com/chat-api/",
+    },
+}
