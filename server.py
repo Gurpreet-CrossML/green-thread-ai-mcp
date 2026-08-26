@@ -32,7 +32,9 @@ mcp = FastMCP(
             "ec2-44-197-115-243.compute-1.amazonaws.com",
             "ec2-44-197-115-243.compute-1.amazonaws.com:*",
             "ec2-13-49-41-40.eu-north-1.compute.amazonaws.com",
-            "ec2-13-49-41-40.eu-north-1.compute.amazonaws.com:*"
+            "ec2-13-49-41-40.eu-north-1.compute.amazonaws.com:*",
+            "chatbot.renkaat247.fi",
+            "chatbot.renkaat247.fi:*"
         ],
         allowed_origins=[
             "http://ec2-44-197-115-243.compute-1.amazonaws.com",
@@ -41,6 +43,8 @@ mcp = FastMCP(
             "https://ec2-13-49-41-40.eu-north-1.compute.amazonaws.com",
             "http://localhost",
             "http://localhost:*",
+            "http://chatbot.renkaat247.fi",
+            "https://chatbot.renkaat247.fi"
         ],
     ),
 )
