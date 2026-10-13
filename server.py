@@ -66,9 +66,10 @@ def list_tyres(
     List all available tyres in the database.
     Supports filtering by various attributes.
 
-    The store is NOT a parameter: it is resolved from the request headers (see
-    `utils.resolve_store`), so it never appears in this tool's schema and the
-    model cannot choose or influence which store's catalogue is queried.
+    The store is NOT a parameter: its catalogue URL and login are resolved from
+    the request headers (see `utils.resolve_store`), so they never appear in
+    this tool's schema and the model cannot choose or influence which store's
+    catalogue is queried.
 
     Args:
         tyre_id (Optional[str]): Filter by tyre ID.
@@ -94,7 +95,7 @@ def list_tyres(
     url = get_url(store, "tyres")
     response = requests.get(
         url,
-        auth=get_basic_auth(),
+        auth=get_basic_auth(store),
         headers=get_headers(),
         params={
             **({"tyre_id": tyre_id} if tyre_id is not None else {}),
@@ -150,7 +151,7 @@ def get_tyre_by_id(store: dict, tyre_id: str) -> Optional[Tyre]:
     url = get_url(store, f"tyres/{tyre_id}")
     response = requests.get(
         url,
-        auth=get_basic_auth(),
+        auth=get_basic_auth(store),
         headers=get_headers()
     )
 
