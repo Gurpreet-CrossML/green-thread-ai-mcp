@@ -10,11 +10,7 @@ from utils import resolve_store, get_url, get_basic_auth, get_headers
 from loggings import logger
 
 mcp = FastMCP(
-    name=str(
-        "Tyre Database Service "
-        "A service to manage and retrieve tyre data. "
-        "1.0.0"
-    ),
+    name=str("Tyre Database Service A service to manage and retrieve tyre data. 1.0.0"),
     transport_security=TransportSecuritySettings(
         enable_dns_rebinding_protection=True,
         allowed_hosts=[
@@ -27,7 +23,7 @@ mcp = FastMCP(
             "ec2-13-49-41-40.eu-north-1.compute.amazonaws.com",
             "ec2-13-49-41-40.eu-north-1.compute.amazonaws.com:*",
             "chatbot.renkaat247.fi",
-            "chatbot.renkaat247.fi:*"
+            "chatbot.renkaat247.fi:*",
         ],
         allowed_origins=[
             "http://ec2-44-197-115-243.compute-1.amazonaws.com",
@@ -37,7 +33,7 @@ mcp = FastMCP(
             "http://localhost",
             "http://localhost:*",
             "http://chatbot.renkaat247.fi",
-            "https://chatbot.renkaat247.fi"
+            "https://chatbot.renkaat247.fi",
         ],
     ),
 )
@@ -50,17 +46,18 @@ def list_tyres(
     tyre_size: Optional[str] = None,
     load_index: Optional[int] = None,
     speed_rating: Optional[str] = None,
-    season: Optional[List[Literal['summer', 'lamel', 'all_season','studded']]] = None,
+    season: Optional[List[Literal["summer", "lamel", "all_season", "studded"]]] = None,
     wet_grip: Optional[str] = None,
     noise_db: Optional[int] = None,
     rolling_resistance: Optional[str] = None,
     price_from: Optional[float] = None,
     price_to: Optional[float] = None,
     is_premium: Optional[bool] = None,
-    vehicle_type: Optional[List[Literal['car', 'suv',
-                                        'van', 'moto', 'truck', 'otr']]] = None,
+    vehicle_type: Optional[
+        List[Literal["car", "suv", "van", "moto", "truck", "otr"]]
+    ] = None,
     limit: int = 5,
-    ctx: Context = None,
+    ctx: Optional[Context] = None,
 ) -> Tyres:
     """
     List all available tyres in the database.
@@ -103,15 +100,27 @@ def list_tyres(
             **({"tyre_size": tyre_size} if tyre_size is not None else {}),
             **({"load_index": load_index} if load_index is not None else {}),
             **({"speed_rating": speed_rating} if speed_rating is not None else {}),
-            **({"season": ','.join(season)} if season is not None and len(season) > 0 else {}),
+            **(
+                {"season": ",".join(season)}
+                if season is not None and len(season) > 0
+                else {}
+            ),
             **({"wet_grip": wet_grip} if wet_grip is not None else {}),
             **({"noise_db": noise_db} if noise_db is not None else {}),
-            **({"rolling_resistance": rolling_resistance} if rolling_resistance is not None else {}),
+            **(
+                {"rolling_resistance": rolling_resistance}
+                if rolling_resistance is not None
+                else {}
+            ),
             **({"price_from": price_from} if price_from is not None else {}),
             **({"price_to": price_to} if price_to is not None else {}),
             **({"is_premium": is_premium} if is_premium is not None else {}),
-            **({"vehicle_type": ','.join(vehicle_type)} if vehicle_type is not None and len(vehicle_type) > 0 else {})
-        }
+            **(
+                {"vehicle_type": ",".join(vehicle_type)}
+                if vehicle_type is not None and len(vehicle_type) > 0
+                else {}
+            ),
+        },
     )
 
     if response.status_code == 200:
@@ -123,12 +132,14 @@ def list_tyres(
         total_pages = result.get("total_pages", None)
 
         # Form the Tyres object and return it.
-        return Tyres(**{
-            # Limit the number of tyres returned
-            "tyres": [Tyre(**item) for item in data[:limit]],
-            "current_page": current_page,
-            "total_pages": total_pages
-        })
+        return Tyres(
+            **{
+                # Limit the number of tyres returned
+                "tyres": [Tyre(**item) for item in data[:limit]],
+                "current_page": current_page,
+                "total_pages": total_pages,
+            }
+        )
     else:
         logger.error(
             f"[{store['code']}] Failed to fetch tyres: "
@@ -149,11 +160,7 @@ def get_tyre_by_id(store: dict, tyre_id: str) -> Optional[Tyre]:
         Optional[Tyre]: The Tyre object if found, otherwise None.
     """
     url = get_url(store, f"tyres/{tyre_id}")
-    response = requests.get(
-        url,
-        auth=get_basic_auth(store),
-        headers=get_headers()
-    )
+    response = requests.get(url, auth=get_basic_auth(store), headers=get_headers())
 
     if response.status_code == 200:
         result = response.json()
@@ -165,6 +172,7 @@ def get_tyre_by_id(store: dict, tyre_id: str) -> Optional[Tyre]:
             f"{response.status_code} - {response.text}"
         )
         return None
+
 
 if __name__ == "__main__":
     mcp.run(transport="streamable-http")

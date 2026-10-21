@@ -1,5 +1,6 @@
 import ipaddress
 import socket
+from typing import NoReturn
 from urllib.parse import urljoin, urlparse
 
 from requests.auth import HTTPBasicAuth
@@ -14,7 +15,7 @@ from constants import (
 from loggings import logger
 
 
-def reject_call(reason: str) -> None:
+def reject_call(reason: str) -> NoReturn:
     """Log the real reason, raise a generic one.
 
     Whatever a tool raises is fed back into the language model's context, so the
@@ -149,7 +150,4 @@ def get_headers():
         dict: A dictionary containing the headers.
     """
 
-    return {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-    }
+    return {"Content-Type": "application/json", "Accept": "application/json"}

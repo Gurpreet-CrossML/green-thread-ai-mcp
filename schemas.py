@@ -12,6 +12,7 @@ class EULabel(BaseModel):
         noise_db (Optional[int]): External rolling noise level, typically expressed as an integer (e.g. 72). None if unknown.
         rolling_resistance (Optional[str]): Rolling resistance class or value (e.g. 'A'..'G' or a numeric code). None if not provided.
     """
+
     wet_grip: Optional[str] = None
     noise_db: Optional[int] = None
     rolling_resistance: Optional[str] = None
@@ -48,6 +49,7 @@ class Tyre(BaseModel):
         - Fields typed as Optional[...] may be None when information is missing.
         - eu_label is expected to be an instance of EULabel representing official EU tyre ratings.
     """
+
     tyre_id: Optional[str] = None
     name: Optional[str] = None
     brand: Optional[str] = None
@@ -83,12 +85,7 @@ class Tyre(BaseModel):
         None
         """
         image_url = data.pop("image", None)
-        super().__init__(
-            **{
-                **data,
-                "image_url": image_url
-            }
-        )
+        super().__init__(**{**data, "image_url": image_url})
 
 
 class Tyres(BaseModel):
@@ -107,6 +104,7 @@ class Tyres(BaseModel):
         This docstring describes a Pydantic BaseModel used for serializing/deserializing paginated API responses
         that return tyre records. Fields with a None value indicate that pagination metadata was not provided.
     """
+
     tyres: list[Tyre] = []
     current_page: Optional[int] = None
     total_pages: Optional[int] = None
@@ -118,7 +116,7 @@ class Tyres(BaseModel):
         self,
         tyres: list[Tyre] = [],
         current_page: Optional[int] = None,
-        total_pages: Optional[int] = None
+        total_pages: Optional[int] = None,
     ):
         """
         Initialize the pagination schema for a collection of Tyre objects.
@@ -158,7 +156,7 @@ class Tyres(BaseModel):
             total_pages=total_pages,
             total_results=self.get_total_results(tyres),
             has_next_page=self.get_has_next_page(current_page, total_pages),
-            has_previous_page=self.get_has_previous_page(current_page)
+            has_previous_page=self.get_has_previous_page(current_page),
         )
 
     def get_total_results(self, tyres) -> int:
@@ -241,6 +239,7 @@ class VehicleOEMTyres(BaseModel):
         options (list[str]): A list of tyre size options associated with the OEM (e.g. ["245/35 R20", "225/55 R17"]).
         message (str, optional): An optional message providing additional information (e.g. "Brand not found").
     """
+
     status: str
     options: list[str] = []
     message: Optional[str] = None
@@ -261,6 +260,7 @@ class VehicleOEMTyresResponse(BaseModel):
     load_index (Optional[int]): The estimated load index for the tyres (e.g. 95). None if not available.
     speed_rating (Optional[str]): The estimated speed rating for the tyres (e.g. "Y"). None if not available.
     """
+
     predicted_oem_front_tyre_size: Optional[str] = None
     oem_front_tyre_sizes: list[str] = []
     predicted_oem_rear_tyre_size: Optional[str] = None
