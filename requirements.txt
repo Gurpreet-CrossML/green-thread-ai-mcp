@@ -1,7 +1,5 @@
 # MCP Server
 fastmcp==2.13.1
-# Google Gemini API client
-google-genai==1.73.1
 # For loading environment variables from .env file
 python-dotenv==1.2.1
 requests==2.32.5
