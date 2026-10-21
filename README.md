@@ -1,1 +1,1 @@
-# green-thread-ai-mcp
+# ai-tyreselection-mcp

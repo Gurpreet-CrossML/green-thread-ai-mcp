@@ -1,0 +1,92 @@
+name: Push to ECR and Deploy to EC2
+
+on:
+  push:
+    # Trigger the workflow on push events to the "beta" branch.
+    branches: [beta]
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }} # The AWS region in which the ECR and Lambda resources are located.
+  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com # The URL of the ECR registry.
+  ECR_REPOSITORY: ai-tyer-selection-dev-mcp-ecr # The name of the ECR repository.
+  IMAGE_TAG: latest # The tag to be used for the Docker image.
+
+jobs:
+  build-and-push:
+    name: Build Image
+    runs-on: ubuntu-latest # Use an Ubuntu Linux runner.
+    environment: beta
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2 # Check out the code from the repository.
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1 # Configure AWS credentials using GitHub Actions secrets.
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{env.AWS_REGION}}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1 # Log in to the Amazon ECR registry.
+
+      - name: Build, tag, and push image to Amazon ECR
+        run: |
+          # Build the Docker image and tag it with the ECR registry, repository, and tag.
+          docker build -t ${{env.ECR_REGISTRY}}/${{env.ECR_REPOSITORY}}:${{env.IMAGE_TAG}} .
+          # Push the Docker image to the Amazon ECR registry.
+          docker push ${{env.ECR_REGISTRY}}/${{env.ECR_REPOSITORY}}:${{env.IMAGE_TAG}}
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    environment: beta
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{env.AWS_REGION}}
+
+      - name: Prepare SSH Key
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" > ec2.pem
+          chmod 600 ec2.pem
+
+      - name: SSH & Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ec2.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'ENDSSH'
+
+
+          echo '[+] Logging into ECR...'
+          aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login \
+              --username AWS \
+              --password-stdin ${{env.ECR_REGISTRY}}
+
+          echo '[+] Pulling latest image...'
+          docker pull ${{env.ECR_REGISTRY}}/${{env.ECR_REPOSITORY}}:${{env.IMAGE_TAG}}
+
+          echo '[+] Stopping old container...'
+          docker stop ${{env.ECR_REPOSITORY}} || true
+          docker rm ${{env.ECR_REPOSITORY}} || true
+
+          echo '[+] Starting new container...'
+          docker run -d \
+              --name ${{env.ECR_REPOSITORY}} \
+              --network host \
+              -p 8002:8002 \
+              -e AWS_REGION='${{ env.AWS_REGION }}' \
+              -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+              -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+              ${{env.ECR_REGISTRY}}/${{env.ECR_REPOSITORY}}:${{env.IMAGE_TAG}}
+
+          echo '[+] Cleaning up old Docker images...'
+          docker images --filter "dangling=true" -q | xargs -r docker rmi -f
+
+          echo '[+] Deployment Completed Successfully!'
+
+          ENDSSH
